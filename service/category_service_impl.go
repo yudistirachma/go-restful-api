@@ -51,10 +51,7 @@ func (service *CategoryServiceImpl) Update(ctx context.Context, request web.Cate
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	category, err := service.CategoryRepository.FindById(ctx, tx, request.Id)
-	if err != nil {
-		panic(exception.NewNotFoundError(err.Error()))
-	}
+	category := findById(ctx, tx, request.Id, service.CategoryRepository)
 
 	category.Name = request.Name
 
@@ -68,10 +65,7 @@ func (service *CategoryServiceImpl) Delete(ctx context.Context, categoryId int) 
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	category, err := service.CategoryRepository.FindById(ctx, tx, categoryId)
-	if err != nil {
-		panic(exception.NewNotFoundError(err.Error()))
-	}
+	category := findById(ctx, tx, categoryId, service.CategoryRepository)
 
 	service.CategoryRepository.Delete(ctx, tx, category)
 }
@@ -81,10 +75,7 @@ func (service *CategoryServiceImpl) FindById(ctx context.Context, categoryId int
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	category, err := service.CategoryRepository.FindById(ctx, tx, categoryId)
-	if err != nil {
-		panic(exception.NewNotFoundError(err.Error()))
-	}
+	category := findById(ctx, tx, categoryId, service.CategoryRepository)
 
 	return helper.ToCategoryResponse(category)
 }
@@ -97,4 +88,13 @@ func (service *CategoryServiceImpl) FindAll(ctx context.Context) []web.CategoryR
 	categories := service.CategoryRepository.FindAll(ctx, tx)
 
 	return helper.ToCategoryResponses(categories)
+}
+
+func findById(ctx context.Context, tx *sql.Tx, categoryId int, service repository.CategoryRepository) domain.Category {
+	category, err := service.FindById(ctx, tx, categoryId)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
+
+	return category
 }
