@@ -13,14 +13,11 @@ import (
 	"testing"
 	"time"
 	"yudistirachma/go-restful-api/app"
-	"yudistirachma/go-restful-api/controller"
 	"yudistirachma/go-restful-api/helper"
 	"yudistirachma/go-restful-api/middleware"
 	"yudistirachma/go-restful-api/model/domain"
 	"yudistirachma/go-restful-api/repository"
-	"yudistirachma/go-restful-api/service"
 
-	"github.com/go-playground/validator/v10"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/stretchr/testify/assert"
 )
@@ -38,11 +35,11 @@ func setupTestDB() *sql.DB {
 }
 
 func setupRouter(db *sql.DB) http.Handler {
-	validate := validator.New()
-	categoryRepository := repository.NewCategoryRepository()
-	categoryService := service.NewCategoryService(categoryRepository, db, validate)
-	categoryController := controller.NewCategoryController(categoryService)
-	router := app.NewRouter(categoryController)
+	// validate := validator.New()
+	// categoryRepository := repository.NewCategoryRepository()
+	// categoryService := service.NewCategoryService(categoryRepository, db, validate)
+	// categoryController := controller.NewCategoryController(categoryService)
+	router := app.NewRouter()
 
 	return middleware.NewAuthMiddleware(router)
 }
